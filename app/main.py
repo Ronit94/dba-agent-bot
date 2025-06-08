@@ -2,10 +2,23 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from contextlib import asynccontextmanager
+from app.orcastrator.state_graph import build_agent
 
 from app.routes import db, conversations
+from app.orcastrator.embedding import embedding_init
 
-app = FastAPI(title="DBA Agent Bot", version="1.0.0")
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    app.state.vector_store = embedding_init()
+    app.state.agent = build_agent(app.state.vector_store)
+    yield
+
+
+
+app = FastAPI(title="DBA Agent Bot", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

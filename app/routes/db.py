@@ -51,3 +51,31 @@ async def save_db_session(request: Request):
     except Exception as e:
         logger.error(f"Error saving session for {email}: {str(e)}")
         return HTTPException(status_code=500, detail=f"An error occurred while saving the session: {str(e)}")
+    
+    
+@router.post("/add-conversation-session")
+async def add_conversation_session(request: Request):
+    """
+    Add a conversation session for a user.
+    """
+    try:
+        body = await request.json()
+        email = body.get("email")
+        chat_context = body.get("chat_context")
+        logger.info(f"Adding conversation session for user: {email}")
+        
+        if not email or not chat_context:
+            logger.error("Missing required parameters: email or chat_context")
+            return HTTPException(status_code=400, detail="Missing required parameters: email or chat_context")
+        
+        if not isinstance(chat_context, dict):
+            logger.error("Invalid data type for chat_context")
+            return HTTPException(status_code=400, detail="Invalid data type for chat_context")
+        
+        await db_utils.add_conversation_session(email, chat_context)
+        logger.info(f"Conversation session added for user: {email}")
+        return JSONResponse(status_code=200, content={"message": "Conversation session added successfully"})
+    
+    except Exception as e:
+        logger.error(f"Error adding conversation session for {email}: {str(e)}")
+        return HTTPException(status_code=500, detail=f"An error occurred while adding the conversation session: {str(e)}")

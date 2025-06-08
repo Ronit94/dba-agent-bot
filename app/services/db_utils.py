@@ -32,6 +32,24 @@ async def save_session(email, token, user_info):
         })
 
 
+async def add_conversation_session(email, chat_context):
+    """
+    Add a conversation session for a user.
+    """
+    logger.info(f"Adding conversation session for user: {email}")
+    session = session_col.find_one({"email": email})
+    if session:
+        session_col.update_one(
+            {"email": email},
+            {"$push": {"chat_context": chat_context}}
+        )
+    else:
+        session_col.insert_one({
+            "email": email,
+            "chat_context": [chat_context]
+        })
+
+
 async def get_saved_session(email):
     sessions = session_col.find_one({"email": email},{"_id":0})
     return sessions
