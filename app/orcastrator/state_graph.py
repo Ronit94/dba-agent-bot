@@ -15,7 +15,7 @@ class MyState(TypedDict):
 
 def build_agent(vectorstore) -> Runnable:
     
-    model = ChatGroq(model="llama3-70b-8192", api_key=groq_api_key)
+    model = ChatGroq(model="deepseek-r1-distill-llama-70b", api_key=groq_api_key)
 
     def respond(state):
         print(state)
