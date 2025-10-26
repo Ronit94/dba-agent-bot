@@ -22,6 +22,3 @@ async def start_conversation(request: Request):
     result = agent.invoke({"input": user_input, "session_id": session_id})
     
     return JSONResponse(content={"response": result["response"]})
-    
-    
-    
